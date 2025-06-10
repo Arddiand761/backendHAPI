@@ -23,7 +23,7 @@ if (!JWT_SECRET) {
 
 const init = async () => {
   const port = process.env.PORT || process.env.NODE_PORT || 3000;
-  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 
   const server = Hapi.server({
     port,
@@ -67,6 +67,12 @@ const init = async () => {
       path: "/register",
       config: { auth: false },
       handler: authHandlers.registerHandler,
+    },
+    {
+      method: "GET",
+      path: "/me",
+      config: { auth: "jwt_strategy" },
+      handler: authHandlers.getProfileHandler,
     },
     {
       method: "POST",
@@ -167,3 +173,4 @@ process.on("unhandledRejection", (err) => {
 });
 
 init();
+
