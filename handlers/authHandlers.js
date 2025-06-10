@@ -161,9 +161,28 @@ const deleteUserHandler = async (request, h) => {
   }
 };
 
+const getProfileHandler = async (request, h) => {
+  try {
+    // Ambil user id dari JWT (sudah diverifikasi oleh HapiJwt)
+    const { id } = request.auth.credentials.user;
+    const queryText =
+      "SELECT id, username, email, created_at FROM users WHERE id = $1";
+    const result = await db.query(queryText, [id]);
+    if (result.rows.length === 0) {
+      return h.response({ error: "User tidak ditemukan." }).code(404);
+    }
+    // Kembalikan profile user (tanpa password_hash)
+    return h.response({ user: result.rows[0] }).code(200);
+  } catch (error) {
+    console.error("Error get profile:", error);
+    return h.response({ error: "Gagal mengambil data user." }).code(500);
+  }
+};
+
 module.exports = {
   registerHandler,
   loginHandler,
   updatePasswordHandler,
   deleteUserHandler,
+  getProfileHandler,
 };
