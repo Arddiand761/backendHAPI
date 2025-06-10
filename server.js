@@ -5,10 +5,9 @@ const HapiJwt = require("@hapi/jwt");
 const dotenv = require("dotenv");
 
 const authHandlers = require("./handlers/authHandlers");
-const transactionHandlers = require("./handlers/transactionHandler"); // Pastikan nama file sesuai
-const goalHandlers = require("./handlers/goalHandler"); // Pastikan nama file sesuai
+const transactionHandlers = require("./handlers/transactionHandler");
+const goalHandlers = require("./handlers/goalHandler");
 const db = require("./database/db");
-
 const axios = require("axios");
 
 dotenv.config();
@@ -23,9 +22,8 @@ if (!JWT_SECRET) {
 }
 
 const init = async () => {
-  // Gunakan PORT dan HOST yang benar untuk Railway/production
   const port = process.env.PORT || process.env.NODE_PORT || 3000;
-  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  const host = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 
   const server = Hapi.server({
     port,
@@ -71,19 +69,23 @@ const init = async () => {
       handler: authHandlers.registerHandler,
     },
     {
+      method: "GET",
+      path: "/me",
+      config: { auth: "jwt_strategy" },
+      handler: authHandlers.getProfileHandler,
+    },
+    {
       method: "POST",
       path: "/login",
       config: { auth: false },
       handler: authHandlers.loginHandler,
     },
-    // Update Password
     {
       method: "PUT",
       path: "/update-password",
       config: { auth: "jwt_strategy" },
       handler: authHandlers.updatePasswordHandler,
     },
-    // Delete User
     {
       method: "DELETE",
       path: "/delete-user",
@@ -135,20 +137,18 @@ const init = async () => {
       config: { auth: "jwt_strategy" },
       handler: goalHandlers.deleteGoalHandler,
     },
-
     {
       method: "GET",
       path: "/transactions/prediction",
       config: { auth: "jwt_strategy" },
       handler: transactionHandlers.getExpensePredictionHandler,
     },
-
     {
       method: "PUT",
       path: "/transactions/{id}/categorize",
       handler: transactionHandlers.categorizeSingleTransactionHandler,
       options: {
-        auth: "jwt_strategy", // Sesuaikan dengan auth strategy Anda
+        auth: "jwt_strategy",
       },
     },
     {
@@ -173,3 +173,4 @@ process.on("unhandledRejection", (err) => {
 });
 
 init();
+
