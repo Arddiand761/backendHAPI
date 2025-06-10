@@ -28,6 +28,12 @@ const init = async () => {
   const server = Hapi.server({
     port,
     host,
+    routes: {
+      cors: {
+        origin: ["*"], // atau ["http://localhost:5173"] untuk dev, "*" untuk semua origin
+        credentials: true,
+      },
+    },
   });
 
   await server.register(HapiJwt);
@@ -173,4 +179,3 @@ process.on("unhandledRejection", (err) => {
 });
 
 init();
-
