@@ -17,7 +17,7 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
 if (!JWT_SECRET) {
   console.error(
-    "FATAL ERROR: JWT_SECRET_KEY tidak di-set di environment variables."
+    "FATAL ERROR: JWT_SECRET_KEY tidak di-set di environment variables.",
   );
   process.exit(1);
 }
@@ -52,7 +52,7 @@ const init = async () => {
       } catch (dbError) {
         console.error(
           "Error saat validasi token di database (JWT strategy):",
-          dbError
+          dbError,
         );
         return { isValid: false };
       }
@@ -137,6 +137,23 @@ const init = async () => {
       path: "/transactions/prediction",
       config: { auth: "jwt_strategy" },
       handler: transactionHandlers.getExpensePredictionHandler,
+    },
+
+    {
+      method: "PUT",
+      path: "/transactions/{id}/categorize",
+      handler: transactionHandlers.categorizeSingleTransactionHandler,
+      options: {
+        auth: "jwt_strategy", // Sesuaikan dengan auth strategy Anda
+      },
+    },
+    {
+      method: "POST",
+      path: "/transactions/categorize-all",
+      handler: transactionHandlers.categorizeAllTransactionsHandler,
+      options: {
+        auth: "jwt_strategy",
+      },
     },
   ];
 
