@@ -28,15 +28,12 @@ const init = async () => {
   const server = Hapi.server({
     port,
     host,
-<<<<<<< HEAD
     routes: {
       cors: {
         origin: ["*"], // atau ["http://localhost:5173"] untuk dev, "*" untuk semua origin
         credentials: true,
       },
     },
-=======
->>>>>>> ab3220f3c9787c498c5bbb11ff11bde8f03f7d8d
   });
 
   await server.register(HapiJwt);
