@@ -1,27 +1,40 @@
-'use strict'
+"use strict";
 
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
-     user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: parseInt(process.env.DB_PORT || '5432'),
-})
-
-
-pool.on('connect', ()=>{
-    console.log('Terhubung ke Postgresql')
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
-pool.on('error', (err) =>{
-    console.error('Error koneksi Database PostgreSQL', err)
-})
+pool.on("connect", (client) => {
+  console.log("✅ Terhubung ke Supabase PostgreSQL");
+});
 
+pool.on("error", (err, client) => {
+  console.error("❌ Error koneksi Database PostgreSQL:", err);
+});
+
+const testConnection = async () => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query("SELECT NOW()");
+    client.release();
+    console.log("🚀 Database connection test successful:", result.rows[0]);
+    return true;
+  } catch (err) {
+    console.error("💥 Database connection test failed:", err);
+    return false;
+  }
+};
 
 module.exports = {
-    query : (text, params) => pool.query(text, params),
-    pool,
-}
+  query: (text, params) => pool.query(text, params),
+  pool,
+  testConnection,
+};
+
