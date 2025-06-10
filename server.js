@@ -23,9 +23,13 @@ if (!JWT_SECRET) {
 }
 
 const init = async () => {
+  // Gunakan PORT dan HOST yang benar untuk Railway/production
+  const port = process.env.PORT || process.env.NODE_PORT || 3000;
+  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
   const server = Hapi.server({
-    port: process.env.NODE_PORT || 3000,
-    host: "localhost",
+    port,
+    host,
   });
 
   await server.register(HapiJwt);
